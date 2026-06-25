@@ -255,7 +255,7 @@ void sendTelemetry(float temp, float ph, float doVal) {
     DeserializationError error = deserializeJson(responseDoc, response);
     if (!error) {
       // 1. Dynamic upload interval sync
-      if (responseDoc.containsKey("intervalMinutes")) {
+      if (responseDoc["intervalMinutes"].is<unsigned int>()) {
         unsigned int serverInterval = responseDoc["intervalMinutes"];
         if (serverInterval != intervalMinutes && serverInterval >= 1) {
           intervalMinutes = serverInterval;
@@ -264,13 +264,13 @@ void sendTelemetry(float temp, float ph, float doVal) {
       }
 
       // 2. Hardware relay controls sync
-      if (responseDoc.containsKey("aeratorState")) {
+      if (responseDoc["aeratorState"].is<bool>()) {
         remoteAeratorActive = responseDoc["aeratorState"];
         Serial.printf("[SYNC] Remote Aerator Relay Status: %s\n", remoteAeratorActive ? "ON" : "OFF");
         // In a physical build, this would drive a relay module:
         // digitalWrite(PIN_GREEN_LED, remoteAeratorActive ? HIGH : LOW);
       }
-      if (responseDoc.containsKey("boreholePumpState")) {
+      if (responseDoc["boreholePumpState"].is<bool>()) {
         remotePumpActive = responseDoc["boreholePumpState"];
         Serial.printf("[SYNC] Remote Pump Relay Status: %s\n", remotePumpActive ? "ON" : "OFF");
       }

@@ -88,8 +88,56 @@ This codebase is configured to be fully portable. If you switch to another PC or
    - Underneath the Save button, expand the **PlatformIO config.h Exporter** panel.
    - Click **Copy** to copy the generated configuration code.
    - Open [firmware/src/config.h](file:///firmware/src/config.h) on your filesystem and overwrite its contents by pasting the copied code.
-4. Upload to the ESP32:
+4. Set Up PlatformIO Local Environment:
    - Connect the ESP32 to the computer via USB.
-   - If PlatformIO is not set up on the computer, double-click [firmware/setup_env.ps1](file:///firmware/setup_env.ps1) to download and install PlatformIO inside a local virtual environment automatically.
-   - Double-click [firmware/upload.bat](file:///firmware/upload.bat) to build and flash the code.
-   - Double-click [firmware/monitor.bat](file:///firmware/monitor.bat) to open the monitor console and watch the ESP32 successfully connect to your local Wi-Fi and upload live values.
+   - If PlatformIO is not set up on this computer, open your terminal (PowerShell or CMD) in the `firmware` directory and initialize the virtual environment:
+     - **PowerShell**:
+       ```powershell
+       Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+       .\setup_env.ps1
+       ```
+     - **Command Prompt (CMD)**:
+       ```cmd
+       setup_env.bat
+       ```
+5. Compile and Flash the ESP32 from the Terminal:
+   - You can compile, flash, and monitor directly using your terminal by first activating the virtual environment:
+     - **PowerShell**:
+       ```powershell
+       # 1. Activate the local environment
+       .\.venv\Scripts\Activate.ps1
+       
+       # 2. Build/compile the firmware
+       pio run
+       
+       # 3. Upload (flash) to the ESP32
+       pio run --target upload
+       
+       # 4. Start Serial Monitor (Ctrl+C to exit)
+       pio device monitor
+       ```
+     - **Command Prompt (CMD)**:
+       ```cmd
+       :: 1. Activate the local environment
+       .venv\Scripts\activate.bat
+       
+       :: 2. Build/compile the firmware
+       pio run
+       
+       :: 3. Upload (flash) to the ESP32
+       pio run -t upload
+       
+       :: 4. Start Serial Monitor (Ctrl+C to exit)
+       pio device monitor
+       ```
+     - *Alternative (Direct CLI Command without Activating Venv)*:
+       If you do not want to activate the virtual environment, you can run the executable directly in your terminal:
+       ```powershell
+       # Build
+       .\.venv\Scripts\pio.exe run
+       # Upload/Flash
+       .\.venv\Scripts\pio.exe run -t upload
+       # Monitor
+       .\.venv\Scripts\pio.exe device monitor
+       ```
+   - If you prefer quick scripts, you can also double-click the batch files (`build.bat`, `upload.bat`, `monitor.bat`, `clean.bat`) in the `firmware/` folder.

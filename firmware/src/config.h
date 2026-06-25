@@ -3,8 +3,8 @@
 #define CONFIG_H
 
 // --- Wi-Fi Credentials ---
-#define WIFI_SSID "AquariumGuard_Net"
-#define WIFI_PASS "aquarium123"
+#define WIFI_SSID "solstice 2.4GHZ
+#define WIFI_PASS "71xnfzctTasP"
 
 // --- Next.js Local Server ---
 #define SERVER_IP "192.168.1.100" // Replace with your PC local IP address

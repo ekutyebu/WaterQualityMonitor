@@ -5,8 +5,7 @@ import {
   Cloud,
   Droplet,
   Thermometer,
-  Bell,
-  Plus,
+  AlertTriangle,
   Activity,
   Fan,
   Droplets,
@@ -67,7 +66,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 4000);
+    const interval = setInterval(fetchData, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -137,6 +136,56 @@ export default function Dashboard() {
 
   const turbidityStatus = getTurbidityStatus(liveTurbidity);
 
+  // Computed water quality action alerts based on live sensor readings
+  const waterAlerts: {
+    key: string;
+    color: string;
+    Icon: React.ComponentType<{ className?: string }>;
+    title: string;
+    action: string;
+  }[] = [];
+
+  if (liveTemp !== null && liveTemp > 32)
+    waterAlerts.push({
+      key: "t-hi",
+      color: "bg-orange-500",
+      Icon: Thermometer,
+      title: "High Temp — Turn On Aerator!",
+      action: "Water temperature is critically high. Turn on the aerator immediately to cool the pond.",
+    });
+  if (liveTemp !== null && liveTemp < 25)
+    waterAlerts.push({
+      key: "t-lo",
+      color: "bg-blue-600",
+      Icon: Thermometer,
+      title: "Low Temp — Cover Tank!",
+      action: "Water temperature is too cold. Cover the tank with plastic tarps to retain heat.",
+    });
+  if (livePh !== null && livePh > 8.5)
+    waterAlerts.push({
+      key: "ph-hi",
+      color: "bg-purple-600",
+      Icon: Droplet,
+      title: "High pH (Alkaline) — Flush Water!",
+      action: "pH is dangerously alkaline. Flush and refresh the water immediately to lower alkalinity.",
+    });
+  if (livePh !== null && livePh < 6.0)
+    waterAlerts.push({
+      key: "ph-lo",
+      color: "bg-amber-500",
+      Icon: Droplet,
+      title: "Low pH (Acidic) — Add CaCO\u2083!",
+      action: "pH is dangerously acidic. Add dilute calcium carbonate (CaCO\u2083) to raise the pH level.",
+    });
+  if (liveTurbidity !== null && liveTurbidity > 100)
+    waterAlerts.push({
+      key: "turb",
+      color: "bg-red-600",
+      Icon: Droplets,
+      title: "High Turbidity — Water Exchange!",
+      action: "Turbidity is critically high. Perform a partial or full water exchange immediately.",
+    });
+
   return (
     <div className="space-y-6">
       
@@ -153,12 +202,7 @@ export default function Dashboard() {
             </h2>
           </div>
         </div>
-        <div className="text-right">
-          <span className="text-xl font-black text-slate-800 block">30°C</span>
-          <span className="text-[10px] font-bold text-slate-500 tracking-wider">
-            Cloudy • Humidity 82%
-          </span>
-        </div>
+
       </div>
 
       {/* 2 & 3. Water Parameters Responsive Grid */}
@@ -289,23 +333,28 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* 5. Scheduled Feeding Alert Banner */}
-      <div className="glass-panel p-4.5 rounded-3xl bg-red-500 text-white flex items-center justify-between border-none shadow-lg">
-        <div className="flex items-center space-x-4">
-          <div className="bg-white/20 p-2 rounded-2xl">
-            <Bell className="h-5 w-5" />
-          </div>
-          <div>
-            <h4 className="text-xs font-black tracking-tight uppercase">Scheduled Feeding in 15m</h4>
-            <p className="text-[9px] text-white/80 font-bold uppercase tracking-wider mt-0.5">
-              Pond 04 high-protein mix protocol.
-            </p>
-          </div>
+      {/* 5. Dynamic Water Quality Action Alert Banners */}
+      {waterAlerts.length > 0 && (
+        <div className="space-y-3">
+          {waterAlerts.map(({ key, color, Icon, title, action }) => (
+            <div
+              key={key}
+              className={`glass-panel p-4 rounded-3xl ${color} text-white flex items-center space-x-4 border-none shadow-lg`}
+            >
+              <div className="bg-white/20 p-2.5 rounded-2xl shrink-0">
+                <Icon className="h-5 w-5" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-xs font-black tracking-tight uppercase">{title}</h4>
+                <p className="text-[9px] text-white/80 font-bold uppercase tracking-wider mt-0.5">
+                  {action}
+                </p>
+              </div>
+              <AlertTriangle className="h-5 w-5 shrink-0 opacity-70 animate-pulse" />
+            </div>
+          ))}
         </div>
-        <button className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-2xl transition">
-          <Plus className="h-4.5 w-4.5" />
-        </button>
-      </div>
+      )}
       
     </div>
   );

@@ -325,9 +325,13 @@ void runLocalAlarms(float temp, float ph, float turbidity) {
     digitalWrite(PIN_GREEN_LED,  LOW);
     digitalWrite(PIN_YELLOW_LED, LOW);
     digitalWrite(PIN_RED_LED,    HIGH);
-    digitalWrite(PIN_BUZZER, HIGH);
-    delay(100);
-    digitalWrite(PIN_BUZZER, LOW);
+    // Buzzer: 3 short beeps for critical alert
+    for (int i = 0; i < 3; i++) {
+      digitalWrite(PIN_BUZZER, HIGH);
+      delay(200);
+      digitalWrite(PIN_BUZZER, LOW);
+      if (i < 2) delay(150);
+    }
   } else if (isWarning) {
     currentStatus = STATUS_WARNING;
     digitalWrite(PIN_GREEN_LED,  LOW);
@@ -481,7 +485,20 @@ void updateLCD(float temp, float ph, float turbidity) {
   // Row 2: Turbidity NTU
   printLine(2, "Turb: %.1f NTU", turbidity);
 
-  // Row 3: Water Status based on turbidity
-  const char* waterStatus = (turbidity < (TURBIDITY_MAX * 0.5)) ? "Clean" : "Dirty";
-  printLine(3, "Water: %s", waterStatus);
+  // Row 3: Priority action message for the most critical active condition
+  const char* actionMsg = "System OK        ";
+  if (turbidity > TURBIDITY_MAX) {
+    actionMsg = "DO WATER EXCHANGE ";
+  } else if (temp > 32.0) {
+    actionMsg = "TURN ON AERATOR! ";
+  } else if (temp < 25.0) {
+    actionMsg = "COVER WITH TARPS ";
+  } else if (ph > PH_MAX) {
+    actionMsg = "FLUSH THE WATER! ";
+  } else if (ph < 6.0) {
+    actionMsg = "ADD DILUTE CaCO3 ";
+  } else if (turbidity > (TURBIDITY_MAX * 0.75)) {
+    actionMsg = "WATER MURKY-WATCH";
+  }
+  printLine(3, "%s", actionMsg);
 }

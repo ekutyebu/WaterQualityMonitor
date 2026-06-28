@@ -2,13 +2,24 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// --- Wi-Fi Credentials ---
-#define WIFI_SSID "AquariumGuard_Net"
-#define WIFI_PASS "aquarium123"
+// --- Multi-Network Wi-Fi Credentials ---
+// The ESP32 will scan and connect to the first available Wi-Fi network in this
+// list.
+struct WifiNetwork {
+  const char *ssid;
+  const char *pass;
+};
+
+const WifiNetwork WIFI_NETWORKS[] = {
+    {"Kess", "kess1114"},           // User's Local Wi-Fi Network
+    {"Kess", "hiyou122"},           // Backup/Local Dedicated IoT Network
+    {"Galaxy A03s4797", "jvwb8331"} // Additional fallback network
+};
+
+const int WIFI_NETWORK_COUNT = sizeof(WIFI_NETWORKS) / sizeof(WIFI_NETWORKS[0]);
 
 // --- Next.js Local Server ---
-#define SERVER_IP                                                              \
-  "10.54.82.240" // Replace with your PC local IP address from ipconfig
+#define SERVER_IP "10.132.242.240" // Your PC local IP address from ipconfig
 #define SERVER_PORT 3000
 
 // --- Sensor Configurations ---

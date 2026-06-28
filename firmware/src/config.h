@@ -2,24 +2,13 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// --- Multi-Network Wi-Fi Credentials ---
-// The ESP32 will scan and connect to the first available Wi-Fi network in this
-// list.
-struct WifiNetwork {
-  const char *ssid;
-  const char *pass;
-};
-
-const WifiNetwork WIFI_NETWORKS[] = {
-    {"Kess", "kess1114"},           // User's Local Wi-Fi Network
-    {"Kess", "hiyou122"},           // Backup/Local Dedicated IoT Network
-    {"Galaxy A03s4797", "jvwb8331"} // Additional fallback network
-};
-
-const int WIFI_NETWORK_COUNT = sizeof(WIFI_NETWORKS) / sizeof(WIFI_NETWORKS[0]);
+// --- Wi-Fi Credentials ---
+#define WIFI_SSID "AquariumGuard_Net"
+#define WIFI_PASS "aquarium123"
 
 // --- Next.js Local Server ---
-#define SERVER_IP "10.54.82.240" // Replace with your PC local IP address from ipconfig
+#define SERVER_IP                                                              \
+  "10.54.82.240" // Replace with your PC local IP address from ipconfig
 #define SERVER_PORT 3000
 
 // --- Sensor Configurations ---
@@ -33,7 +22,9 @@ const int WIFI_NETWORK_COUNT = sizeof(WIFI_NETWORKS) / sizeof(WIFI_NETWORKS[0]);
 #define PIN_BUZZER 22
 
 // --- Sensor Analog Pins ---
-#define PIN_TEMP_BUS 32  // Temp sensor input pin (changed from 4 to 32 to avoid ADC2 Wi-Fi conflict)
+#define PIN_TEMP_BUS                                                           \
+  32 // Temp sensor input pin (changed from 4 to 32 to avoid ADC2 Wi-Fi
+     // conflict)
 #define PIN_PH_ANALOG 34 // Analog pin for pH sensor
 #define PIN_TURBIDITY_ANALOG                                                   \
   35 // Analog pin for Turbidity sensor (replacing old DO pin)
@@ -41,8 +32,8 @@ const int WIFI_NETWORK_COUNT = sizeof(WIFI_NETWORKS) / sizeof(WIFI_NETWORKS[0]);
 // --- Optional LCD Display (I2C) Pins ---
 // Connect an I2C LiquidCrystal (e.g. 16x2 LCD with PCF8574 adapter) to these
 // pins:
-#define PIN_LCD_SDA 25 // SDA Pin (Data)
-#define PIN_LCD_SCL 26 // SCL Pin (Clock)
+#define PIN_LCD_SDA 25       // SDA Pin (Data)
+#define PIN_LCD_SCL 26       // SCL Pin (Clock)
 #define LCD_I2C_ADDRESS 0x27 // Default I2C Address for PCF8574 LCD backpack
 
 // --- Sensor Local Threshold Boundaries ---

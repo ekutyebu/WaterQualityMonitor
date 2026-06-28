@@ -24,7 +24,9 @@ const int WIFI_NETWORK_COUNT = sizeof(WIFI_NETWORKS) / sizeof(WIFI_NETWORKS[0]);
 
 // --- Sensor Configurations ---
 #define SIMULATE_SENSORS 0 // Set to 0 to read physical pins, 1 to simulate
-#define DEFAULT_INTERVAL_MINS 3
+#define DEFAULT_INTERVAL_MINS 3000 // Kept for server-side reference only
+#define TELEMETRY_INTERVAL_MS                                                  \
+  3000 // How often the ESP32 uploads to the server (milliseconds)
 
 // --- Hardware GPIO Pins ---
 #define PIN_GREEN_LED 18

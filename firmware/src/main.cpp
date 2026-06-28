@@ -133,7 +133,7 @@ void loop() {
   }
 
   // Check if it's time to send the next telemetry payload
-  unsigned long intervalMs = (unsigned long)intervalMinutes * 60UL * 1000UL;
+  unsigned long intervalMs = TELEMETRY_INTERVAL_MS;
   if (now - lastTelemetryTime >= intervalMs || lastTelemetryTime == 0) {
     // Upload to Next.js Local Server using latest values
     sendTelemetry(latestTemp, latestPh, latestTurbidity);
@@ -325,10 +325,10 @@ void runLocalAlarms(float temp, float ph, float turbidity) {
     digitalWrite(PIN_GREEN_LED,  LOW);
     digitalWrite(PIN_YELLOW_LED, LOW);
     digitalWrite(PIN_RED_LED,    HIGH);
-    // Buzzer: 3 short beeps for critical alert
+    // Buzzer: 3 long beeps for critical alert
     for (int i = 0; i < 3; i++) {
       digitalWrite(PIN_BUZZER, HIGH);
-      delay(200);
+      delay(300);
       digitalWrite(PIN_BUZZER, LOW);
       if (i < 2) delay(150);
     }
@@ -337,13 +337,22 @@ void runLocalAlarms(float temp, float ph, float turbidity) {
     digitalWrite(PIN_GREEN_LED,  LOW);
     digitalWrite(PIN_YELLOW_LED, HIGH);
     digitalWrite(PIN_RED_LED,    LOW);
-    digitalWrite(PIN_BUZZER,     LOW);
+    // Buzzer: 2 short beeps for warning
+    for (int i = 0; i < 2; i++) {
+      digitalWrite(PIN_BUZZER, HIGH);
+      delay(100);
+      digitalWrite(PIN_BUZZER, LOW);
+      if (i < 1) delay(100);
+    }
   } else {
     currentStatus = STATUS_OK;
     digitalWrite(PIN_GREEN_LED,  HIGH);
     digitalWrite(PIN_YELLOW_LED, LOW);
     digitalWrite(PIN_RED_LED,    LOW);
-    digitalWrite(PIN_BUZZER,     LOW);
+    // Buzzer: 1 very short chirp for normal
+    digitalWrite(PIN_BUZZER, HIGH);
+    delay(50);
+    digitalWrite(PIN_BUZZER, LOW);
   }
 }
 
@@ -485,8 +494,8 @@ void updateLCD(float temp, float ph, float turbidity) {
   // Row 2: Turbidity NTU
   printLine(2, "Turb: %.1f NTU", turbidity);
 
-  // Row 3: Priority action message for the most critical active condition
-  const char* actionMsg = "System OK        ";
+  // Row 3: Priority action message during alerts; water clarity status when all is normal
+  const char* actionMsg;
   if (turbidity > TURBIDITY_MAX) {
     actionMsg = "DO WATER EXCHANGE ";
   } else if (temp > 32.0) {
@@ -499,6 +508,9 @@ void updateLCD(float temp, float ph, float turbidity) {
     actionMsg = "ADD DILUTE CaCO3 ";
   } else if (turbidity > (TURBIDITY_MAX * 0.75)) {
     actionMsg = "WATER MURKY-WATCH";
+  } else {
+    // Default: show water clarity status based on turbidity
+    actionMsg = (turbidity < (TURBIDITY_MAX * 0.5)) ? "Water: CLEAN     " : "Water: DIRTY     ";
   }
   printLine(3, "%s", actionMsg);
 }

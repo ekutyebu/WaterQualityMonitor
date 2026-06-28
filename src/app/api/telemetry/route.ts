@@ -100,10 +100,16 @@ export async function POST(req: NextRequest) {
 
       if (value > maxVal) {
         isViolated = true;
-        msg = `${paramLabel} exceeds critical maximum limit of ${maxVal}. Current: ${value}.`;
+        let actionMsg = "";
+        if (paramName === "TEMPERATURE") actionMsg = " Turn on the aerator immediately to cool the pond.";
+        if (paramName === "PH") actionMsg = " Flush and refresh the water immediately to lower alkalinity.";
+        msg = `${paramLabel} exceeds critical maximum limit of ${maxVal}. Current: ${value}.${actionMsg}`;
       } else if (value < minVal) {
         isViolated = true;
-        msg = `${paramLabel} falls below critical minimum limit of ${minVal}. Current: ${value}.`;
+        let actionMsg = "";
+        if (paramName === "TEMPERATURE") actionMsg = " Cover the tank with plastic tarps to retain heat.";
+        if (paramName === "PH") actionMsg = " Add dilute calcium carbonate (CaCO3) to raise the pH level.";
+        msg = `${paramLabel} falls below critical minimum limit of ${minVal}. Current: ${value}.${actionMsg}`;
       }
 
       if (isViolated) {
@@ -144,7 +150,7 @@ export async function POST(req: NextRequest) {
               severity: "CRITICAL",
               parameter: "TURBIDITY",
               value,
-              message: `Critical Turbidity Warning: Water clarity reached ${value.toFixed(1)} NTU, exceeding safe maximum of ${maxVal} NTU. Recommended action: water change or filtration check.`,
+              message: `Critical Turbidity Warning: Water clarity reached ${value.toFixed(1)} NTU, exceeding safe maximum of ${maxVal} NTU. Perform a partial or full water exchange immediately.`,
             },
           });
           generatedAlerts.push(alert);

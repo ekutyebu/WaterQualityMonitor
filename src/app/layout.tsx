@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import SidebarNav from "@/components/SidebarNav";
+import { AudioAlerts } from "@/components/AudioAlerts";
 
 export const metadata: Metadata = {
   title: "AquariumGuard | Catfish Aquaculture System",
@@ -16,6 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-slate-50 min-h-screen text-slate-900 font-sans antialiased">
+        <AudioAlerts />
         {/* Desktop Sidebar (Hidden on mobile) */}
         <SidebarNav />
 
